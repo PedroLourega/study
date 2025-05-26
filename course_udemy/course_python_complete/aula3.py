@@ -19,7 +19,7 @@ print(2, "Pedro 'Henrique'")
 
 
 #escape
-print("Pedro \" henrique")
+print("Pedro \" henrique \"")
 
-#r
+#r - aparece o escape
 print(r"Pedro \"henrique\"")
