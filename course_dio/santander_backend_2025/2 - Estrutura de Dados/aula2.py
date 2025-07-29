@@ -41,3 +41,49 @@ print(linguagens)
 linguagens.extend(["java", "csharp"])
 
 print(linguagens)
+
+
+# PESQUISA DE ITENS NA LISTA, E MOSTRA A PRIMEIRA POSIÇÃO
+
+print(linguagens.index("python"))
+
+
+# REMOVE ELEMENTOS DA LISTA (POR PADRÃO TIRA O ULTIMO, MAS VOCÊ PODE DEFINIR)
+
+linguagens.pop()
+linguagens.pop(2)
+print(linguagens)
+
+# REMOVE SEM USAR O INDICE
+
+linguagens.remove("java")
+print(linguagens)
+
+# COLOCA A LISTA AO CONTRÁRIO
+
+linguagens.reverse()
+print(linguagens)
+
+# ORGANIZA A ORDEM DA LISTA (PADRÃO: ORDEM ALFABETICA)
+linguagens2 = ["python", "js", "c"]
+linguagens2.extend(["java", "csharp"])
+linguagens2.sort()
+print(linguagens2)
+
+linguagens2.sort(reverse=True)
+print(linguagens2)
+
+linguagens2.sort(key=lambda x: len(x))
+print(linguagens2)
+
+linguagens2.sort(key=lambda x: len(x), reverse=True)
+print(linguagens2)
+
+# VERIFICA O TAMANHO
+
+print(len(linguagens2))
+
+#FUNÇÃO SORTED, PARECIDA COM SORT
+
+print(sorted(linguagens2, key=lambda x:len(x)))
+print(sorted(linguagens2, key=lambda x:len(x), reverse=True))
