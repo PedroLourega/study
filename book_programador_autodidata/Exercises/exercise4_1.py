@@ -1,8 +1,7 @@
+texto = str(input("Digite qualquer coisa:"))
 
-texto = input("Escreva uma palavra: ")
+def exibir_palavra(texto):
+    print("Essa foi a frase escrita por você: ",texto)
+    return
 
-
-def exibir_string(palavra):
-    print(palavra)
-
-exibir_string(texto)
+exibir_palavra(texto)
