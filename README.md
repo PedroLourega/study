@@ -1,44 +1,29 @@
-# 💻 Study Repository
+# Study Repository
 
-Repositório de estudos e aprendizados contínuos na área de tecnologia.
+A structured repository for continuous study, hands-on practice, and knowledge retention across software development topics.  
+This repo is organized to keep exercises clear, document learning progress, and make future revisions easier.
 
----
+## Contents
 
-## 📘 Descrição (PT-BR)
+- Exercises and practice (fundamentals, problem solving, patterns)
+- Code snippets with context
+- Mini projects / prototypes to validate concepts
+- Notes summarizing key takeaways and references
 
-Este repositório é dedicado aos meus **estudos contínuos** na área de tecnologia.  
-Aqui, adiciono regularmente conteúdos provenientes de **cursos**, **pesquisas**, **aulas** e **estudos autônomos** sobre temas como:
+## Organization
 
-- 💻 Programação  
-- 🧠 Inteligência Artificial  
-- 🗃️ Bancos de Dados  
-- 🌐 Desenvolvimento Web  
-- 🧪 Testes e Experimentos
+- `exercises/` — fundamentals and practice by topic/language  
+- `projects/` — small projects and prototypes  
+- `notes/` — study notes and references  
+- `assets/` — images and supporting files  
 
-Funciona como uma **base de conhecimento pessoal**, onde organizo **anotações**, **trechos de código** e **experimentos**, enquanto aprofundo meu entendimento em diferentes áreas da tecnologia.
+## Conventions
 
-> 🔖 Este espaço cresce junto com a minha jornada contínua na área.
+- Consistent naming and folder structure
+- Small, focused commits describing what changed/was learned
+- Notes emphasize: purpose, approach, pitfalls, and summary
 
----
-
-## 📘 Description (EN)
-
-This repository is dedicated to my **ongoing studies** in technology.  
-Here, I regularly add content from **courses**, **research**, **classes**, and self-driven studies about topics such as:
-
-- 💻 Programming  
-- 🧠 Artificial Intelligence  
-- 🗃️ Databases  
-- 🌐 Web Development  
-- 🧪 Testing and Experiments
-
-It works as a **personal knowledge base** where I organize **notes**, **code snippets**, and **experiments**, while deepening my understanding of different tech areas.
-
-> 🔖 This space grows along with my journey as a **lifelong learner** in tech.
-
----
-
-## 🛠️ Tecnologias e Temas Estudados
+## Technologies and Topics
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
@@ -48,12 +33,7 @@ It works as a **personal knowledge base** where I organize **notes**, **code sni
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![VSCode](https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 
----
-
-## 👨‍💻 Autor
+## Author
 
 **Pedro Henrique Lourega Rodrigues**  
-📚 Estudante de Análise e Desenvolvimento de Sistemas  
-🔗 GitHub: [@PedroLourega](https://github.com/PedroLourega)
-
----
+GitHub: [@PedroLourega](https://github.com/PedroLourega)
