@@ -1,7 +1,11 @@
 # ARGS E KWARGS
 
-# ARGS(representados por *)
+# ARGS(representados por *) 
+# VALORES representados por uma tupla()
+
+
 # KWARGS( representados por **)
+# VALORES representados por dicionário{:}
 
 def exibir_poema(data_extenso, *args, **kwargs):
     texto = "\n".join(args)
@@ -9,7 +13,7 @@ def exibir_poema(data_extenso, *args, **kwargs):
     mensagem = f"{data_extenso}\n\n{texto}\n\n{meta_dados}"
     print(mensagem)
 
-exibir_poema("Terça-feira, 29 de Julho de 2025",
+exibir_poema("Tuesday, July 29, 2025",
              "Zen of Python",
                "Beautiful is better than ugly.",
                  autor="Tim Peters",

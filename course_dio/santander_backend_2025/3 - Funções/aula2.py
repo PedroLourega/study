@@ -1,3 +1,5 @@
+
+# Funcao que calcula o total de uma lista de números
 def calcular_total(numeros):
     return sum(numeros)
 
