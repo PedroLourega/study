@@ -17,4 +17,6 @@ criar_carro("Palio", 1999, "ABC-1234", marca="Fiat", motor="1.0", combustivel="G
 
 # O código abaixo passa a ser inválido pois define chave-posicao antes da barra(/) limitadora
 #print("Carro inválido:")
+
+
 #criar_carro(modelo="Palio", ano=1999, placa="ABC", marca="Fiat", motor="1.0", combustivel="Gasolina") #Inválido
