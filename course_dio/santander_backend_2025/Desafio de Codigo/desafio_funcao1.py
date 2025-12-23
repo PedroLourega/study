@@ -6,7 +6,7 @@ tipo_cliente = input()
 # Calcula o valor total sem desconto
 valor_total = peso * preco_por_tonelada
 
-# TODO Aplique o desconto conforme o tipo de cliente
+# Aplique o desconto conforme o tipo de cliente
 if tipo_cliente == "Novo cliente":
   desconto = 0.0
 elif tipo_cliente == "Cliente fidelizado":
