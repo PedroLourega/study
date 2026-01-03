@@ -10,13 +10,6 @@ This repo is organized to keep exercises clear, document learning progress, and 
 - Mini projects / prototypes to validate concepts
 - Notes summarizing key takeaways and references
 
-## Organization
-
-- `exercises/` — fundamentals and practice by topic/language  
-- `projects/` — small projects and prototypes  
-- `notes/` — study notes and references  
-- `assets/` — images and supporting files  
-
 ## Conventions
 
 - Consistent naming and folder structure
