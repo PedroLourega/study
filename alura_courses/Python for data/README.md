@@ -18,6 +18,10 @@ A capacitação foi realizada através da licença corporativa disponibilizada p
 
 ## Author
 
-**Pedro Henrique Lourega Rodrigues** 
-GitHub: [@PedroLourega](https://github.com/PedroLourega)  
-Linkedin: [pedrolourega](https://www.linkedin.com/in/pedrolourega/)
+
+**Pedro Henrique Lourega Rodrigues**  
+
+
+GitHub: [@PedroLourega](https://github.com/PedroLourega)
+
+Linkedin: https://www.linkedin.com/in/pedrolourega/
