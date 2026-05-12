@@ -1,0 +1,9 @@
+directory: .
+# Container registry URL for pushing Docker images.
+# Examples:
+#   ECR:       123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo
+#   GCR:       gcr.io/my-project/my-image
+#   Azure:     myregistry.azurecr.io/my-image
+#   DockerHub: docker.io/myuser/my-image
+#   GHCR:      ghcr.io/myorg/my-image
+registry: 'docker.io/build/dagster_quickstart'
