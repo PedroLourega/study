@@ -1,0 +1,4 @@
+[dependency-groups]
+dev = [
+    "arcgis>=2.4.3",
+]
