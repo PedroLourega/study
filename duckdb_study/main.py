@@ -1,34 +1,12 @@
 # IMPORTS
-from logging import config
 import os
 import duckdb
+import tomllib
 from tqdm import tqdm
 from dotenv import load_dotenv
 
-# CONFIGURAÇÕES DE BANCO
-src_schema, trg_schema, src_nome_tabela, trg_nome_tabela = (
-    "public",
-    "public",
-    "car_imoveis_validos_a",
-    "car_imoveis_validos_a",
-)
-
-# VARIAVEL GLOBAL PARA ARMAZENAR O VALOR DO LOTE
-TAMANHO_LOTE = 100000
-
-# COLUNA DE ID
-COL_ID = "objectid"
-
 # CARREGAR DADOS DOTENV
-
 load_dotenv()
-
-db_host = os.getenv("DB_HOST")
-db_user = os.getenv("DB_USER")
-db_pass = os.getenv("DB_PASS")
-db_name = os.getenv("DB_NAME")
-
-DB_URI = f"dbname={db_host} user={db_user} password={db_pass} host={db_name}"
 
 # SOURCE
 src_db_host = os.getenv("SOURCE_DB_HOST")
@@ -49,21 +27,21 @@ trg_db_port = os.getenv("TARGET_DB_PORT")
 TARGET_DB_URI = f"dbname={trg_db_name} password={trg_db_pass} user={trg_db_user} host={trg_db_host} port={trg_db_port}"
 
 
-def _get_duckdb_con():
+def _load_config(path_config: str = "config.toml") -> dict:
     """
-    FUNÇÃO QUE GERA A CONEXÃO DO DUCKDB
+    LÊ O ARQUIVO .TOML DE CONFIGURAÇÕES DO SCRIPT
     """
-    # dicionário de configuração
-    config_dict = {
-        "threads": "4",
-        "memory_limit": "4GB",
-    }
-    # gerador de conexão':memory:' permite centralizar o processo executado em memória
-    con = duckdb.connect(":memory:", config=config_dict)
-    # adiciona uma barra de progresso
-    # con.execute("SET enable_progress_bar=false;")
+    with open(file=path_config, mode="rb") as config:
+        return tomllib.load(config)
 
-    # instalação e carregamento de extensões
+
+def _get_duckdb_con(config_dict) -> duckdb.DuckDBPyConnection:
+    """
+    FUNÇÃO QUE GERA A CONEXÃO DO DUCKDB E CONFIGURA A FERRAMENTA
+    """
+    duckdb_config = {k: str(v) for k, v in config_dict.items()}
+    con = duckdb.connect(":memory:", config=duckdb_config)
+
     con.execute("INSTALL postgres;")
     con.execute("LOAD postgres;")
 
@@ -73,11 +51,11 @@ def _get_duckdb_con():
     return con
 
 
-def _get_contagem_ids(con: duckdb.DuckDBPyConnection, src_schema, src_nome_tabela):
-
+def _get_cont_ids(con: duckdb.DuckDBPyConnection, src_schema, src_nome_tabela, col_id):
     limite = con.execute(f"""
-    SELECT MIN({COL_ID}), MAX({COL_ID}) FROM db_source.{src_schema}.{src_nome_tabela}
-""").fetchone()
+        SELECT MIN({col_id}), MAX({col_id}) 
+        FROM db_source.{src_schema}.{src_nome_tabela}
+    """).fetchone()
 
     return limite[0], limite[1]
 
@@ -88,91 +66,103 @@ def copiar_tabela_duckdb(
     trg_schema,
     src_nome_tabela,
     trg_nome_tabela,
+    col_id,
+    tamanho_lote,
 ):
     """
     FUNÇÃO PARA COPIAR UMA TABELA DE UM BANCO PARA OUTRO
     """
-
-    # CONECTA O DUCKDB COM O BANCO ORIGEM (READ ONLY)
-    con.execute(f"ATTACH '{SOURCE_DB_URI}' AS db_source (TYPE postgres, READ_ONLY);")
-
-    # CONECTA O DUCKDB COM O BANCO DE DESTINO
-    con.execute(f"ATTACH '{TARGET_DB_URI}' AS db_target (TYPE postgres);")
-
-    min_id, max_id = _get_contagem_ids(con, src_schema, src_nome_tabela)
-
-    total_lotes = ((max_id - min_id) // TAMANHO_LOTE) + 1
-
-    print(
-        f"BANCOS CONECTADOS COM SUCESSO!!! \nINICIANDO PROCESSO DE CÓPIA DOS DADOS...\nSCHEMA_ORIGEM:'{src_schema}'\nSCHEMA_DESTINO:'{trg_schema}'\nNOME_TABELA_ORIGEM:'{src_nome_tabela}'\nNOME_TABELA_DESTINO:'{trg_nome_tabela}'"
-    )
-
-    # QUERY PARA CRIAR A TABELA SE ELA JA NAO EXISTIR
-    query_create_table = f"""
-    CREATE TABLE IF NOT EXISTS db_target.{trg_schema}.{trg_nome_tabela} AS
-    SELECT * FROM db_source.{src_schema}.{src_nome_tabela} LIMIT 0;
-    """
-
-    # QUERY DE VERIFICAÇÃO
-    tabela_existe = con.execute(
-        f"""
-    SELECT EXISTS (
-        SELECT 1
-        FROM db_target.information_schema.tables
-        WHERE table_schema = '{trg_schema}' AND table_name = '{trg_nome_tabela}' 
-        );
-    """
-    ).fetchone()[0]
-
-    # QUERY PARA COPIAR A TABELA DE UM BANCO PARA OUTRO
-    query_copy = f"""
-    INSERT INTO db_target.{trg_schema}.{trg_nome_tabela}
-    SELECT * FROM db_source.{src_schema}.{src_nome_tabela};
-    """
-
     try:
+        # CONECTA O DUCKDB COM O BANCO ORIGEM (READ ONLY)
+        con.execute(
+            f"ATTACH '{SOURCE_DB_URI}' AS db_source (TYPE postgres, READ_ONLY);"
+        )
+
+        # CONECTA O DUCKDB COM O BANCO DE DESTINO
+        con.execute(f"ATTACH '{TARGET_DB_URI}' AS db_target (TYPE postgres);")
+
+        print(
+            f"BANCOS CONECTADOS COM SUCESSO!!! \nINICIANDO PROCESSO DE CÓPIA DOS DADOS...\n"
+            f"ORIGEM - SCHEMA.NOME_TABELA:'{src_schema}'.'{src_nome_tabela}'\nDESTINO - SCHEMA.NOME_TABELA:'{trg_schema}'.'{trg_nome_tabela}'"
+        )
+
+        # QUERY PARA CRIAR A TABELA SE ELA JA NAO EXISTIR
+        query_create_table = f"""
+            CREATE TABLE IF NOT EXISTS db_target.{trg_schema}.{trg_nome_tabela} AS
+            SELECT * FROM db_source.{src_schema}.{src_nome_tabela} LIMIT 0;
+        """
+
+        # QUERY DE VERIFICAÇÃO PARA RETORNAR TRUE SE A TABELA EXISTIR
+        tabela_existe = con.execute(f"""
+            SELECT EXISTS (
+                SELECT 1
+                FROM db_target.information_schema.tables
+                WHERE table_schema = '{trg_schema}' AND table_name = '{trg_nome_tabela}' 
+            );
+        """).fetchone()[0]
+
+        # CONDIÇÃO SE A TABELA EXISTE OU NÃO
         if tabela_existe:
             print(
-                f'NÃO FOI NECESSÁRIO CRIAR A TABELA POIS ELA JÁ ESTÁ PRESENTE NO BANCO DE DADOS: "{trg_schema}"."{trg_nome_tabela}"'
+                f'NÃO FOI NECESSÁRIO A CRIAÇÃO DA TABELA POIS ELA JÁ ESTÁ PRESENTE NO BANCO DE DADOS: "{trg_schema}"."{trg_nome_tabela}"'
             )
-            # con.execute(query_copy)
-            # print("SUCESSO AO EXECUTAR A INSERÇÃO DOS DADOS!!!")
         else:
             con.execute(query_create_table)
-            # con.execute(query_copy)
             print(
-                f"TABELA NÃO FOI ENCONTRADA.\nCRIADA EM: '{trg_schema}'.'{trg_nome_tabela}' CRIADA COM SUCESSO"
+                f"TABELA NÃO FOI ENCONTRADA NO BANCO...\nCRIADA EM: '{trg_schema}'.'{trg_nome_tabela}' COM SUCESSO!!"
             )
-            # print("SUCESSO AO EXECUTAR A INSERÇÃO DOS DADOS!!!")
 
-        with tqdm(total=total_lotes, desc="Controle de Progresso", unit="lote") as pbar:
+        # DEFININDO VALOR DO ID MIN E MAX ATRAVÉS DA FUNÇÃO DE COLETA DE IDS
+        min_id, max_id = _get_cont_ids(con, src_schema, src_nome_tabela, col_id)
+
+        # CALCULA O TOTAL DE LOTES
+        total_lotes = ((max_id - min_id) // tamanho_lote) + 1
+
+        # CONFIGURAÇÃO DA BARRA DE PROGRESSO
+        with tqdm(total=total_lotes, desc="Controle de Progresso") as pbar:
             id_atual = min_id
 
+            # LOOP PARA SOMAR OS IDs
             while id_atual <= max_id:
-                limite_sup = id_atual + TAMANHO_LOTE - 1
+                limite_sup = id_atual + tamanho_lote - 1
 
+                # QUERY PARA INSERIR DADOS APENAS QUE ESTÃO ENTRE OS IDs SELECIONADOS DO LOTE
                 query_lote = f"""
-                INSERT INTO db_target.{trg_schema}.{trg_nome_tabela}
-                SELECT * FROM db_source.{src_schema}.{src_nome_tabela}
-                WHERE {COL_ID} BETWEEN {id_atual} AND {limite_sup};
+                    INSERT INTO db_target.{trg_schema}.{trg_nome_tabela}
+                    SELECT * FROM db_source.{src_schema}.{src_nome_tabela}
+                    WHERE {col_id} BETWEEN {id_atual} AND {limite_sup};
                 """
-            con.execute(query_lote)
-            print(
-                f"DADOS FORAM INSERIDOS COM SUCESSO!!\nSCHEMA.TABLE_NAME:{trg_schema}.{trg_nome_tabela}"
-            )
+                con.execute(query_lote)
 
-            id_atual += TAMANHO_LOTE
-            pbar.update(1)
+                # ATUALIZA A BARRA DE PROGRESSO COM O VALOR DO LOTE ATUAL
+                id_atual += tamanho_lote
+                pbar.update(1)
+
+        print(
+            f"\nDADOS FORAM INSERIDOS COM SUCESSO, PROCESSO FINALIZADO✅!!\nSCHEMA.TABLE_NAME:{trg_schema}.{trg_nome_tabela}"
+        )
+
     except Exception as e:
-        print(f"ERRO AO EXECUTAR A QUERY...\nERRO:{e}")
+        print(f"\nERRO AO EXECUTAR A QUERY...\nERRO:{e}")
+    # FINALIZA A TRANSAÇÃO
     finally:
         con.close()
 
 
 # FUNÇÕES DO PIPELINE
 def main():
+    config = _load_config("config.toml")
+    duckdb_dict = config["duckdb"]
+    pipe_config = config["pipeline"]
+
     copiar_tabela_duckdb(
-        _get_duckdb_con(), src_schema, trg_schema, src_nome_tabela, trg_nome_tabela
+        con=_get_duckdb_con(duckdb_dict),
+        src_schema=pipe_config["src_schema"],
+        trg_schema=pipe_config["trg_schema"],
+        src_nome_tabela=pipe_config["src_nome_tabela"],
+        trg_nome_tabela=pipe_config["trg_nome_tabela"],
+        col_id=pipe_config["col_id"],
+        tamanho_lote=pipe_config["tamanho_lote"],
     )
 
 

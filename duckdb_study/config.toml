@@ -1,0 +1,11 @@
+[duckdb]
+threads = 4
+memory_limit = "4GB"
+
+[pipeline]
+src_schema = 'public'
+trg_schema = 'public'
+src_nome_tabela = 'car_imoveis_validos_a'
+trg_nome_tabela = 'car_imoveis_validos_a'
+col_id = 'objectid'
+tamanho_lote = 100000
