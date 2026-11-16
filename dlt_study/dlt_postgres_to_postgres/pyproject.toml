@@ -1,0 +1,15 @@
+[project]
+name = "dlt-postgres-to-postgres"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "dlt[duckdb,postgres]>=1.32.0",
+    "geoalchemy2>=0.21.0",
+    "pandas>=3.1.1",
+    "psycopg2-binary>=2.9.13",
+    "pyarrow>=26.0.1",
+    "sqlalchemy>=2.1.8",
+    "tqdm>=4.70.1",
+]
