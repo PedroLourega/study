@@ -1,0 +1,16 @@
+[pipeline]
+name = "api_postgres_pipeline"
+
+[pokeapi]
+dataset_name = 'dados_pokeapi'
+base_url = 'https://pokeapi.co/api/v2/'
+page_limit = 100
+max_offset = 1200
+verify_ssl = false
+
+[github]
+dataset_name = 'dados_github'
+base_url = "https://api.github.com/"
+per_page = 10
+max_pages = 2
+verify_ssl = true
